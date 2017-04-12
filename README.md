@@ -3,7 +3,7 @@ Android Sensors app for HMI
 
 # Basic information
 * Target SDK - 23
-* Minimal SDK - 15
+* Minimal SDK - 21
 
 # Running project
 1. clone this repository to your private fork
