@@ -25,10 +25,7 @@ import android.view.*;
 import android.support.v4.app.NavUtils;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.akexorcist.roundcornerprogressbar.IconRoundCornerProgressBar;
 
 import java.io.IOException;
@@ -109,8 +106,8 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             return false;
         }
     };
+    //camera
 
-    private ImageView capturedImage;
     static final String TAG = "CamTest";
     static final int MY_PERMISSIONS_REQUEST_CAMERA = 1242;
     private static final int MSG_CAMERA_OPENED = 1;
@@ -126,9 +123,16 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     boolean mSurfaceCreated = true;
     boolean mIsCameraConfigured = false;
     private Surface mCameraSurface = null;
+    //tmp
+    private TextView maxAccRange;
+
     //Sensors
     private SensorManager sensorManager;
 
+    //Barometer
+    private android.hardware.Sensor barometerSensor;
+    private TextView barPressure;
+    private IconRoundCornerProgressBar pressureBar;
     //Compass
     private ImageView compassImage;
     private android.hardware.Sensor compass;
@@ -138,8 +142,11 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     private android.hardware.Sensor lightSensor;
     private IconRoundCornerProgressBar LightMeter;
 
-    //CameraButton
-    private Button SwitchCameraButton;
+    //accelerometer
+    private android.hardware.Sensor accelerometerSensor;
+    private IconRoundCornerProgressBar accelerometer;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,11 +158,30 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+
+
         //Compass
         compassImage = (ImageView)findViewById(R.id.compasImage);
 
+        //Barometer
+        pressureBar = (IconRoundCornerProgressBar) findViewById(R.id.pressureBar);
+        pressureBar.setProgressBackgroundColor(Color.parseColor("#8BCED2"));
+        pressureBar.setProgressColor(Color.parseColor("#0B687D"));
+        pressureBar.setIconBackgroundColor(Color.parseColor("#8BCED2"));
+        pressureBar.setMax(1100);
+
+        barPressure = (TextView)findViewById(R.id.pressureValue);
+
         //Light
         LightMeter = (IconRoundCornerProgressBar)findViewById(R.id.LightBarInCamera);
+
+        //Accelerometer
+        accelerometer = (IconRoundCornerProgressBar)findViewById(R.id.accelerometer);
+        accelerometer.setIconBackgroundColor(R.color.trans);
+        accelerometer.setProgressBackgroundColor(R.color.trans);
+
+        accelerometer.setProgressColor(Color.parseColor("#D44330"));
+        accelerometer.setSecondaryProgressColor(Color.parseColor("#D44330"));
 
         LightMeter.setProgressColor(Color.parseColor("#0D47A1"));
         LightMeter.setProgressBackgroundColor(Color.parseColor("#64B5F6"));
@@ -165,6 +191,9 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         lightSensor = sensorManager.getDefaultSensor(android.hardware.Sensor.TYPE_LIGHT);
         compass = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+        accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        barometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+
 
         if(lightSensor != null){
             sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
@@ -172,12 +201,18 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         if(compass != null){
             sensorManager.registerListener(this, compass , SensorManager.SENSOR_DELAY_NORMAL);
         }
+        if (accelerometerSensor != null){
+            sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+        if (barometerSensor != null){
+            sensorManager.registerListener(this, barometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
 
 
 
 
         //Camera
-        SwitchCameraButton = (Button) findViewById(R.id.dummy_button);
+        //SwitchCameraButton = (Button) findViewById(R.id.dummy_button);
         //camera preview
 
 
@@ -251,6 +286,20 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             compassImage.startAnimation(ra);
             currentDegree=-degree;
         }
+        else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+            float xvalue = Math.round(event.values[0]+event.values[1]+event.values[2]);
+
+            accelerometer.setMax(120);
+            accelerometer.setProgress(xvalue);
+        }
+        else if (event.sensor.getType() == Sensor.TYPE_PRESSURE){
+            float pressureValue = Math.round(event.values[0]);
+            pressureBar.setProgress((int)pressureValue);
+            //pressureBar.setProgress(997);
+            barPressure.setText(Float.toString(pressureValue));
+            barPressure.setTextColor(Color.WHITE);
+        }
+
 
 
 
@@ -274,16 +323,17 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
-              //  Toast.makeText(getApplicationContext(), "request permission", Toast.LENGTH_SHORT).show();
+                //  Toast.makeText(getApplicationContext(), "request permission", Toast.LENGTH_SHORT).show();
             }
         } else {
-          //  Toast.makeText(getApplicationContext(), "PERMISSION_ALREADY_GRANTED", Toast.LENGTH_SHORT).show();
+            //  Toast.makeText(getApplicationContext(), "PERMISSION_ALREADY_GRANTED", Toast.LENGTH_SHORT).show();
             try {
                 mCameraManager.openCamera(mCameraIDsList[0], mCameraStateCB, new Handler());
             } catch (CameraAccessException e) {
                 e.printStackTrace();
             }
         }
+
 
     }
     @Override
@@ -445,6 +495,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         mVisible = false;
 
         LightMeter.setVisibility(View.INVISIBLE);
+        accelerometer.setVisibility(View.INVISIBLE);
         compassImage.setVisibility(View.INVISIBLE);
         // Schedule a runnable to remove the status and navigation bar after a delay
         mHideHandler.removeCallbacks(mShowPart2Runnable);
@@ -458,6 +509,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         mVisible = true;
         LightMeter.setVisibility(View.VISIBLE);
+        accelerometer.setVisibility(View.VISIBLE);
         compassImage.setVisibility(View.VISIBLE);
         // Schedule a runnable to display UI elements after a delay
         mHideHandler.removeCallbacks(mHidePart2Runnable);
