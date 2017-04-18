@@ -3,6 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-
+    <color name="accBackgroundColor">#64B5F6</color>
+    <color name="accProgressOneColor">#96CF03</color>
+    <color name="accProgressTwoColor">#D44330</color>
     <color name="black_overlay">#66000000</color>
+    <color name="trans">#00000000 </color>
 </resources>

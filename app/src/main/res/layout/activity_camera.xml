@@ -40,12 +40,12 @@
                       tools:ignore="UselessParent">
 
 
-            <Button android:id="@+id/dummy_button"
-                    style="?metaButtonBarButtonStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Switch camera"/>
+            <!--<Button android:id="@+id/dummy_button"-->
+                    <!--style="?metaButtonBarButtonStyle"-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:text="Switch camera"/>-->
 
         </LinearLayout>
         <com.akexorcist.roundcornerprogressbar.IconRoundCornerProgressBar
@@ -57,6 +57,7 @@
                 app:rcIconPadding="5dp"
                 app:rcIconSrc="@mipmap/light"
                 android:layout_marginTop="5dp" android:layout_marginLeft="40dp"/>
+
         <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
@@ -64,6 +65,38 @@
                 android:background="@android:color/transparent"
                 android:id="@+id/compasImage" android:layout_gravity="center_horizontal|bottom"
                 android:layout_marginBottom="50dp"/>
+        <com.akexorcist.roundcornerprogressbar.IconRoundCornerProgressBar
+                android:id="@+id/accelerometer"
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                app:rcBackgroundPadding="1px"
+                app:rcIconSize="50dp"
+                app:rcIconPadding="5dp"
+                app:rcIconSrc="@mipmap/accelerometer_icon"
+                android:layout_gravity="center_horizontal|top" android:layout_marginTop="40dp"/>
+        <com.akexorcist.roundcornerprogressbar.IconRoundCornerProgressBar
+                android:id="@+id/pressureBar"
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                app:rcBackgroundPadding="1px"
+                app:rcIconSize="50dp"
+                app:rcIconPadding="5dp"
+                app:rcIconSrc="@mipmap/accelerometer_icon"
+                android:layout_gravity="center_horizontal|top" android:layout_marginTop="75dp"/>
+
+        <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@mipmap/accelerometer_icon"
+                android:id="@+id/accelerometerPosition" android:layout_gravity="center"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Large Text"
+                android:id="@+id/pressureValue" android:layout_gravity="left|center_vertical"/>
+
+
 
     </FrameLayout>
 
